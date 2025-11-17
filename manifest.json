@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "MyHours Percentage Calculator",
+  "description": "Calculates Total / All Hours percentage on MyHours track page.",
+  "version": "1.0",
+  "permissions": [],
+  "content_scripts": [
+    {
+      "matches": ["https://*.myhours.com/*"],
+      "js": ["content.js"],
+      "css": ["style.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}
