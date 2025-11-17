@@ -1,11 +1,27 @@
 function parseTimeString(str) {
     const parts = str.trim().split(':').map(Number);
-    if (parts.length === 3) {
-        return parts[0] * 3600 + parts[1] * 60 + parts[2]; // HH:MM:SS
-    } else if (parts.length === 2) {
-        return parts[0] * 3600 + parts[1] * 60; // HH:MM
-    }
+    if (parts.length === 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+    if (parts.length === 2) return parts[0] * 3600 + parts[1] * 60;
     return 0;
+}
+
+function ensurePercentageElement() {
+    const totalContainer = document.querySelector(".total-time-display");
+    if (!totalContainer) return null;
+
+    let el = document.getElementById("percentage-inline");
+    if (!el) {
+        el = document.createElement("span");
+        el.id = "percentage-inline";
+        el.style.marginLeft = "6px";
+        totalContainer.appendChild(el);
+    }
+    return el;
+}
+
+function removePercentageElement() {
+    const el = document.getElementById("percentage-inline");
+    if (el) el.remove();
 }
 
 function calculatePercentage() {
@@ -14,33 +30,32 @@ function calculatePercentage() {
 
     if (!totalEl || !bottomEl) return;
 
-    const totalStr = totalEl.textContent;
-    const bottomStr = bottomEl.textContent;
+    const totalStr = totalEl.textContent.trim();
+    const bottomStr = bottomEl.textContent.trim();
 
     const totalSeconds = parseTimeString(totalStr);
     const bottomSeconds = parseTimeString(bottomStr);
 
-    if (bottomSeconds === 0) return;
+    // If bottom = 0 → REMOVE ELEMENT COMPLETELY (fix padding)
+    if (bottomSeconds === 0) {
+        removePercentageElement();
+        return;
+    }
 
-    const percentage = (totalSeconds / bottomSeconds) * 100;
+    let el = ensurePercentageElement();
+    if (!el) return;
 
-    updateWidget(percentage.toFixed(1));
+    // show spinner while calculating
+    el.innerHTML = `<span class="spinner"></span>`;
+
+    const percent = (totalSeconds / bottomSeconds) * 100;
+    const formatted = percent.toFixed(1);
+
+    let colorClass = (percent >= 90 && percent <= 100) ? "percent-green" : "percent-red";
+
+    // Write the percentage
+    el.innerHTML = `<span class="${colorClass}">${formatted}%</span>`;
 }
 
-function createWidget() {
-    const widget = document.createElement("div");
-    widget.id = "percentage-widget";
-    widget.textContent = "...";
-    document.body.appendChild(widget);
-}
-
-function updateWidget(value) {
-    const widget = document.getElementById("percentage-widget");
-    if (widget) widget.textContent = value + "%";
-}
-
-// Create widget on page load
-createWidget();
-
-// Run immediately + re-run every 2 seconds to catch UI updates
-setInterval(calculatePercentage, 2000);
+// Update every .5 seconds
+setInterval(calculatePercentage, 500);

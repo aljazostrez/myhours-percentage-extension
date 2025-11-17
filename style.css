@@ -1,14 +1,14 @@
-#percentage-widget {
-    position: fixed;
-    top: 15px;
-    right: 15px;
-    background: #007bff;
-    color: white;
-    padding: 10px 14px;
-    border-radius: 8px;
-    font-size: 16px;
+.percent-green {
+    color: #2ecc71; /* green */
     font-weight: bold;
-    z-index: 999999;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    font-family: Arial, sans-serif;
+}
+
+.percent-red {
+    color: #e74c3c; /* red */
+    font-weight: bold;
+}
+
+#percentage-inline {
+    margin-left: 6px;
+    font-size: 14px;
 }
